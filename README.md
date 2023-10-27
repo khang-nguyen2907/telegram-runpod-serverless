@@ -1,5 +1,10 @@
 # telegram-runpod-serverless
 ## Deploy Runpod Serverless Endpoint 
+- Firstly you need to clone this repository: 
+```
+git clone git@github.com:khang-nguyen2907/telegram-runpod-serverless.git
+cd telegram-runpod-serverless
+```
 ### 1. Build Docker Image
 #### Dockerfile Explanation
 - Runpod serverless endpoint will base on your docker image as the working environment 
