@@ -29,7 +29,7 @@ COPY handler.py /data/handler.py
 COPY __init__.py /data/__init__.py
 
 ENV MODEL_NAME="khangnguyen2907/opt-350m-telegram-chat"
-ENV MODEL_REPO="/data/mistral_model"
+ENV MODEL_REPO="/data/model"
 ENV HUGGING_FACE_HUB_TOKEN="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"
 ENV HUGGINGFACE_HUB_CACHE="/runpod-volume/huggingface-cache/hub"
 ENV TRANSFORMERS_CACHE="/runpod-volume/huggingface-cache/hub"
