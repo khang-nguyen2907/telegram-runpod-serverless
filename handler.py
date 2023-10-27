@@ -70,9 +70,9 @@ def inference(event):
         )
         decoded = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)
 
-    output = decoded[0]
-    logging.info(f'\nFULL OUTPUT: \n{output}\n')
-    logging.info(f'OUTPUT: {decoded[0][len(job_input["prompt"]):]}')
-    return decoded[0][len(job_input["prompt"]):]
+    output = decoded[0].split("[/INST]")[-1]
+    logging.info(f'\nFULL OUTPUT: \n{decoded[0]}\n')
+    logging.info(f'OUTPUT: {output}')
+    return output
 
 runpod.serverless.start({"handler": inference})
