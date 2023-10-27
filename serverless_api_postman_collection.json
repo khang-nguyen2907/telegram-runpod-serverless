@@ -1,0 +1,203 @@
+{
+	"info": {
+		"_postman_id": "d56c28fc-287a-4c6b-9cbb-398e6d7830ad",
+		"name": "telegram-serverless-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27227286"
+	},
+	"item": [
+		{
+			"name": "Get Status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"try {",
+							"    let template = `<a href=\"https://generativelabs.co/\">@GenerativeLabs</a>",
+							"    <div style='font-weight:bold;'>{{status}}</div>",
+							"    <img src='data:image/png;base64, {{img}}'/>",
+							"    `;",
+							"",
+							"    pm.visualizer.set(template, { ",
+							"        img: pm.response.json()[\"output\"][\"images\"][0],",
+							"        status: pm.response.json()[\"status\"]",
+							"    });",
+							"} catch(e) {",
+							"    //console.log(\"Couldn't yet load template.\")",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_key}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://api.runpod.ai/v2/{{serverless_api_id}}/status/",
+					"protocol": "https",
+					"host": [
+						"api",
+						"runpod",
+						"ai"
+					],
+					"path": [
+						"v2",
+						"{{serverless_api_id}}",
+						"status",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Run (async)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_key}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"input\": {\n        \"prompt\": \"<s> [INST] The following is a friendly conversation between an user and a assistant. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know. [/INST] </s> [INST] current conversation: user: How are you? Today is terrible, I want to do something to feel fun assistant: [/INST]\",\n        \"max_new_tokens\": 500,\n        \"temperature\": 0.9,\n        \"top_k\": 50,\n        \"top_p\": 0.7,\n        \"repetition_penalty\": 1.2,\n        \"batch_size\": 8,\n        \"stop\": [\"</s>\"]\n    }\n}"
+				},
+				"url": {
+					"raw": "https://api.runpod.ai/v2/{{serverless_api_id}}/run",
+					"protocol": "https",
+					"host": [
+						"api",
+						"runpod",
+						"ai"
+					],
+					"path": [
+						"v2",
+						"{{serverless_api_id}}",
+						"run"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Run (sync)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"try {",
+							"    let template = `<a href=\"https://generativelabs.co/\">@GenerativeLabs</a>",
+							"    <div style='font-weight:bold;'>{{status}}</div>",
+							"    <img src='data:image/png;base64, {{img}}'/>",
+							"    `;",
+							"",
+							"    pm.visualizer.set(template, { ",
+							"        img: pm.response.json()[\"output\"][\"images\"][0],",
+							"        status: pm.response.json()[\"status\"]",
+							"    });",
+							"} catch(e) {",
+							"    //console.log(\"Couldn't yet load template.\")",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_key}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"input\": {\n        \"prompt\": \"<s> [INST] The following is a friendly conversation between an user and a assistant. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know. [/INST] </s> [INST] current conversation: user: How are you? Today is terrible, I want to do something to feel fun assistant: [/INST]\",\n        \"max_new_tokens\": 500,\n        \"temperature\": 0.9,\n        \"top_k\": 50,\n        \"top_p\": 0.7,\n        \"repetition_penalty\": 1.2,\n        \"batch_size\": 8,\n        \"stop\": [\"</s>\"]\n    }\n}"
+				},
+				"url": {
+					"raw": "https://api.runpod.ai/v2/{{serverless_api_id}}/runsync",
+					"protocol": "https",
+					"host": [
+						"api",
+						"runpod",
+						"ai"
+					],
+					"path": [
+						"v2",
+						"{{serverless_api_id}}",
+						"runsync"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "serverless_api_id",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "api_key",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
