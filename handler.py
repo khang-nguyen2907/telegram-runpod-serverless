@@ -11,7 +11,7 @@ from huggingface_hub import login
 
 logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"))
 # HF_TOKEN = os.getenv("HUGGING_FACE_HUB_TOKEN", None)
-MODEL_REPO = os.getenv("MODEL_REPO","mistralai/Mistral-7B-Instruct-v0.1")
+MODEL_REPO = os.getenv("MODEL_REPO","ehartford/dolphin-2.2.1-mistral-7b")
 # logging.info("HF TOKEN exists" if HF_TOKEN else f"HF TOKEN does not exist, got {HF_TOKEN}")
 
 # login(HF_TOKEN)
@@ -70,7 +70,8 @@ def inference(event):
         )
         decoded = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)
 
-    output = decoded[0].split("[/INST]")[-1]
+    # output = decoded[0].split("[/INST]")[-1]
+    output = decoded[0].split("<|im_start|>assistant")[-1]
     logging.info(f'\nFULL OUTPUT: \n{decoded[0]}\n')
     logging.info(f'OUTPUT: {output}')
     return output

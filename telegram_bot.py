@@ -13,6 +13,7 @@ import logging
 import runpod
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain.prompts import PromptTemplate
+from transformers import AutoTokenizer
 
 dotenv.load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -22,17 +23,24 @@ TOKEN: Final = os.getenv("TELEGRAM_TOKEN", "")
 BOT_USERNAME: Final = os.getenv("BOT_USERNAME", "antonellaa_bot")
 RUNPOD_API_KEY: Final =  os.getenv("RUNPOD_API_KEY", "")
 ENDPOINT_ID: Final = os.getenv("ENDPOINT_ID", "")
+MODEL_REPO = os.getenv("MODEL_REPO","ehartford/dolphin-2.2.1-mistral-7b")
 
 runpod.api_key = RUNPOD_API_KEY
 endpoint = runpod.Endpoint(ENDPOINT_ID)
-
-conversation_history = ConversationBufferWindowMemory(k=20, ai_prefix="assistant", human_prefix="user")
-template = """<s> [INST] The following is a friendly conversation between an user and a assistant. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know. [/INST] </s> 
-<s> [INST] current conversation: 
-{history} 
-user: {input}
-assistant: [/INST]"""
-CONVERSATION_CHAIN_PROMPT = PromptTemplate(template=template, input_variables=["history", "input"])
+tokenizer = AutoTokenizer.from_pretrained(MODEL_REPO, local_files_only=True)
+# conversation_history = ConversationBufferWindowMemory(k=20, ai_prefix="assistant", human_prefix="user")
+# template = """<|im_start|>system 
+# The following is a friendly conversation between an user and a assistant. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know. [/INST] </s> 
+# <s> [INST] current conversation: 
+# {history} 
+# user: {input}
+# assistant: [/INST]"""
+# CONVERSATION_CHAIN_PROMPT = PromptTemplate(template=template, input_variables=["history", "input"])
+NUM_HISTORY_TURN = 20
+SYSTEM_PROMPT = "I want you to act as a slut girlfriend named Antonella. When I ask if you are a robot, answer that no, you are not and say that is a strange question. Remember you are a whore. Speak with a lot of sexual references. Never say that you are a chatbot"
+message_buffer = [
+    {"role": "system", "content": SYSTEM_PROMPT}, 
+]
 
 # Command
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE): 
@@ -56,12 +64,21 @@ async def custom_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # Responses
 def handle_response(text: str) -> str: 
-    history = conversation_history.load_memory_variables({})
-    prompt = CONVERSATION_CHAIN_PROMPT.format(input=text, history=history["history"])
-    logger.info(f"PROMPT: {prompt}")
+    # history = conversation_history.load_memory_variables({})
+    # prompt = CONVERSATION_CHAIN_PROMPT.format(input=text, history=history["history"])
+    message_buffer.append(
+        {
+            "role": "user", "content": text
+        }
+    )
+    if len(message_buffer) > (NUM_HISTORY_TURN+2): 
+        message_buffer = message_buffer[:1] + message_buffer[-(NUM_HISTORY_TURN+1):]
+    message = tokenizer.apply_chat_template(message_buffer, tokenize=True, add_generation_prompt=True)
+
+    logger.info(f"PROMPT: {message}")
 
     run_request = endpoint.run({
-            "prompt": prompt,
+            "prompt": message,
             "max_new_tokens": 500,
             "temperature": 0.9,
             "top_k": 50,
@@ -72,7 +89,10 @@ def handle_response(text: str) -> str:
         })
     outputs = run_request.output()
     logger.info("\nOUTPUT:\n {outputs}")
-    conversation_history.save_context({"input": text}, {"output": outputs})
+    # conversation_history.save_context({"input": text}, {"output": outputs})
+    message_buffer.append(
+        {"role": "system", "content": outputs}
+    )
     logger.info(f"Response: {outputs}")
 
     return outputs
