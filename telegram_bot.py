@@ -73,12 +73,11 @@ def handle_response(text: str) -> str:
     )
     if len(message_buffer) > (NUM_HISTORY_TURN+2): 
         message_buffer = message_buffer[:1] + message_buffer[-(NUM_HISTORY_TURN+1):]
-    message = tokenizer.apply_chat_template(message_buffer, tokenize=True, add_generation_prompt=True)
 
-    logger.info(f"PROMPT: {message}")
+    logger.info(f"PROMPT: {message_buffer}")
 
     run_request = endpoint.run({
-            "prompt": message,
+            "prompt": message_buffer,
             "max_new_tokens": 500,
             "temperature": 0.9,
             "top_k": 50,
@@ -88,7 +87,7 @@ def handle_response(text: str) -> str:
             "stop": ["</s>"]
         })
     outputs = run_request.output()
-    logger.info("\nOUTPUT:\n {outputs}")
+    logger.info(f"\nOUTPUT:\n {outputs}")
     # conversation_history.save_context({"input": text}, {"output": outputs})
     message_buffer.append(
         {"role": "system", "content": outputs}
