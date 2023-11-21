@@ -55,12 +55,12 @@ def inference(event):
     if not job_input: 
         raise ValueError("No input provided")
 
-    model_input = tokenizer(job_input["prompt"], return_tensors="pt").to(device)
+    model_input = tokenizer.apply_chat_template(job_input["prompt"],tokenize=True, add_generation_prompt=True, return_tensors="pt").to(device)
     logging.info(f'\nPROMPT: \n{job_input["prompt"]}\n')
 
     with torch.no_grad(): 
         generated_ids = model.generate(
-            **model_input,
+            model_input,
             max_new_tokens=job_input["max_new_tokens"], 
             do_sample=True, 
             top_p=job_input["top_p"], 
@@ -71,7 +71,7 @@ def inference(event):
         decoded = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)
 
     # output = decoded[0].split("[/INST]")[-1]
-    output = decoded[0].split("<|im_start|>assistant")[-1]
+    output = decoded[0].split("<|im_start|> assistant")[-1]
     logging.info(f'\nFULL OUTPUT: \n{decoded[0]}\n')
     logging.info(f'OUTPUT: {output}')
     return output

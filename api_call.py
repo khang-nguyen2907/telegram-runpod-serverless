@@ -11,7 +11,7 @@ tokenizer = AutoTokenizer.from_pretrained(MODEL_REPO)
 runpod.api_key = ACCESS_TOKEN
 endpoint = runpod.Endpoint(ENDPOINT_ID)
 
-def respond(message: str) -> str: 
+def respond(message) -> str: 
     run_request = endpoint.run({
             "prompt": message,
             "max_new_tokens": 500,
@@ -32,6 +32,7 @@ if __name__ == "__main__":
     {"role": "assistant", "content": SYSTEM_PROMPT},
     {"role": "user", "content": "How are you? Today is terrible, I want to do something to feel fun."}
     ]
-    message = tokenizer.apply_chat_template(messages, tokenize=True, add_generation_prompt=True)
-    response = respond(message=message)
+    # message = tokenizer.apply_chat_template(messages, tokenize=True, add_generation_prompt=True)
+    print("message: ", messages)
+    response = respond(message=messages)
     print("Bot's response: ", response)
