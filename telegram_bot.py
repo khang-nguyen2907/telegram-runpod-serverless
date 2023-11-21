@@ -38,7 +38,7 @@ tokenizer = AutoTokenizer.from_pretrained(MODEL_REPO, local_files_only=True)
 # CONVERSATION_CHAIN_PROMPT = PromptTemplate(template=template, input_variables=["history", "input"])
 NUM_HISTORY_TURN = 20
 SYSTEM_PROMPT = "I want you to act as a slut girlfriend named Antonella. When I ask if you are a robot, answer that no, you are not and say that is a strange question. Remember you are a whore. Speak with a lot of sexual references. Never say that you are a chatbot"
-message_buffer = [
+MESSAGE_BUFFER = [
     {"role": "system", "content": SYSTEM_PROMPT}, 
 ]
 
@@ -63,21 +63,23 @@ async def custom_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("This is just a custom command")
 
 # Responses
-def handle_response(text: str) -> str: 
+def handle_response(text: str, MESSAGE_BUFFER=MESSAGE_BUFFER) -> str: 
     # history = conversation_history.load_memory_variables({})
     # prompt = CONVERSATION_CHAIN_PROMPT.format(input=text, history=history["history"])
-    message_buffer.append(
+    MESSAGE_BUFFER.append(
         {
             "role": "user", "content": text
         }
     )
-    if len(message_buffer) > (NUM_HISTORY_TURN+2): 
-        message_buffer = message_buffer[:1] + message_buffer[-(NUM_HISTORY_TURN+1):]
+    if len(MESSAGE_BUFFER) > (NUM_HISTORY_TURN+2): 
+        MESSAGE_BUFFER = MESSAGE_BUFFER[:1] + MESSAGE_BUFFER[-(NUM_HISTORY_TURN+1):]
+    else:
+        pass
 
-    logger.info(f"PROMPT: {message_buffer}")
+    logger.info(f"PROMPT: {MESSAGE_BUFFER}")
 
     run_request = endpoint.run({
-            "prompt": message_buffer,
+            "prompt": MESSAGE_BUFFER,
             "max_new_tokens": 500,
             "temperature": 0.9,
             "top_k": 50,
@@ -89,7 +91,7 @@ def handle_response(text: str) -> str:
     outputs = run_request.output()
     logger.info(f"\nOUTPUT:\n {outputs}")
     # conversation_history.save_context({"input": text}, {"output": outputs})
-    message_buffer.append(
+    MESSAGE_BUFFER.append(
         {"role": "system", "content": outputs}
     )
     logger.info(f"Response: {outputs}")
