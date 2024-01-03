@@ -4,11 +4,13 @@ pytest-cov==4.1.0
 pylint==2.17.5
 black==23.7.0
 ipython==8.15.0
-transformers[torch]==4.34.1
+transformers[torch]==4.36.2
 sentencepiece==0.1.99
 nltk==3.8.1
 datasets==2.14.4
-accelerate==0.22.0
+accelerate==0.25.0
+auto-gptq
+optimum==1.16.1
 PyYAML==6.0.1
 ensure==1.0.3
 python-box==7.1.1
