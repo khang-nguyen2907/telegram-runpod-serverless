@@ -38,9 +38,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 logging.info(f"DEVICE: {device}")
 model = AutoModelForCausalLM.from_pretrained(
     MODEL_REPO,
-    low_cpu_mem_usage=True,
-    return_dict=True,
-    torch_dtype=torch.bfloat16,
+    # low_cpu_mem_usage=True,
+    # return_dict=True, 
+    # torch_dtype=torch.bfloat16, 
     device_map="auto",
     local_files_only=True
 ).to(device)
@@ -57,6 +57,7 @@ def inference(event):
 
     model_input = tokenizer.apply_chat_template(job_input["prompt"],tokenize=True, add_generation_prompt=True, return_tensors="pt").to(device)
     logging.info(f'\nPROMPT: \n{job_input["prompt"]}\n')
+    logging.info(f"\nMODEL_INPUT: \n{model_input}")
 
     with torch.no_grad(): 
         generated_ids = model.generate(
