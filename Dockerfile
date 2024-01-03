@@ -1,4 +1,4 @@
-FROM runpod/pytorch:2.0.1-py3.10-cuda11.8.0-devel
+FROM runpod/pytorch:2.1.1-py3.10-cuda12.1.1-devel-ubuntu22.04
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -24,17 +24,18 @@ WORKDIR /data
 
 COPY requirements.txt /data/requirements.txt
 RUN pip install -r /data/requirements.txt
+RUN pip install -U git+https://github.com/huggingface/transformers.git
 
 COPY handler.py /data/handler.py
 COPY __init__.py /data/__init__.py
 
-ENV MODEL_NAME="ehartford/dolphin-2.2.1-mistral-7b"
+ENV MODEL_NAME="TheBloke/dolphin-2.5-mixtral-8x7b-GPTQ"
 ENV MODEL_REPO="/data/model"
 ENV HUGGING_FACE_HUB_TOKEN="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"
 ENV HUGGINGFACE_HUB_CACHE="/runpod-volume/huggingface-cache/hub"
 ENV TRANSFORMERS_CACHE="/runpod-volume/huggingface-cache/hub"
 
 RUN mkdir $MODEL_REPO
-RUN huggingface-cli download $MODEL_NAME --token $HUGGING_FACE_HUB_TOKEN --local-dir=$MODEL_REPO 
+RUN huggingface-cli download $MODEL_NAME --token $HUGGING_FACE_HUB_TOKEN --local-dir=$MODEL_REPO --local-dir-use-symlinks False
 
 CMD ["python", "-m", "handler"]
